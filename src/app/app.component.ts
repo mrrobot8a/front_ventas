@@ -91,7 +91,7 @@ export class AppComponent implements OnInit {
       case AuthStatus.notAuthenticated:
 
         localStorage.removeItem('returnUrl')
-        this.router.navigateByUrl('/dashboard');
+        this.router.navigateByUrl('/auth/login');
         return;
 
     }
