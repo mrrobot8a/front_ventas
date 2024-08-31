@@ -1,0 +1,48 @@
+<section class="container-login">
+  <article class="content-login">
+    <article class="header-login">
+
+      <div class="title">Welcome</div>
+
+    </article>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <section class="inputs">
+
+        <label for="username">Correo Electronico</label>
+        <mat-form-field appearance="outline">
+          <mat-label>Correo Electronico</mat-label>
+          <input formControlName="email" placeholder="usuario@valledupar-cesar.gov.co" name="email" matInput
+            type="text">
+          <mat-error *ngIf="loginForm.controls['email'].invalid && loginForm.controls['email'].touched">
+            Correo Erroneo.
+          </mat-error>
+        </mat-form-field>
+
+
+        <label for="password">Contraseña</label>
+
+        <mat-form-field class="input-password" appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input formControlName="password" placeholder="*********" name="password" matInput
+            [type]="hide ? 'password' : 'text'">
+          <button mat-icon-button matSuffix type="button" (click)="hide = !hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error *ngIf="loginForm.controls['password'].invalid && loginForm.controls['password'].touched">
+            La contraseña debe tener al menos 2 caracteres.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Enlace fuera del div -->
+        <a routerLink="/auth/resetPassword" class="recuperar-passwork">¿Olvidaste tu contraseña?</a>
+      </section>
+      <div class="buttons">
+        <button [disabled]="loginForm.invalid || isLoading">
+          <app-loadingpulso *ngIf="isLoading"></app-loadingpulso>
+          <span *ngIf="!isLoading"> inicar sesion</span>
+        </button>
+      </div>
+
+    </form>
+  </article>
+</section>

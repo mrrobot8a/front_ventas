@@ -1,0 +1,27 @@
+<app-custom-table
+  [data]="getDataHistory()!"
+  [displayedColumns]="[
+  'name','category',
+  'brand','unit_price',
+  'stock_units','description',
+  'supplier_name','supplier_nit',
+  'acciones']"
+  [columnNames]="{
+    'name': 'Nombre Producto' , 'category':'categoria',
+    'brand': 'linea', 'unit_price': 'Precio Unitario',
+    'stock_units': 'Unidades en Stock', 'description': 'Descripción',
+    'supplier_name': 'Nombre Proveedor', 'supplier_nit': 'NIT Proveedor',
+    'acciones': 'Acción Usuario'}"
+  [showColumnActions]="showColumnActions"
+  [camposDinamicos]="camposDinamicos"
+  [isPosting]="isPosting()"
+  [isLoading]="isLoading"
+  [isStatusSolictud]="isStatusSolicitudHttp()"
+  (pageChange)="onPageChange($event)"
+  (editarEvento)="onEditar($event)"
+  (eliminarEvento)="onEliminar($event)"
+  (onSave)="onSave($event)"
+  [title]="title"
+  >
+</app-custom-table>
+
