@@ -4,7 +4,6 @@ import { LoadingIndicatorComponent } from './loading/isLoading/isLoading.compone
 import { CommonModule } from '@angular/common';
 import { CustomTableComponent } from './components/Custom-table/Custom-table.component';
 import { LoadingpulsoComponent } from './loading/isLoadingPulso/loadingpulso/loadingpulso.component';
-import { ViewFileComponent } from './components/viewFile/viewFile.component';
 
 
 
@@ -14,7 +13,7 @@ import { ViewFileComponent } from './components/viewFile/viewFile.component';
     Error404PageComponent,
     LoadingIndicatorComponent,
     LoadingpulsoComponent,
-    ViewFileComponent,
+
 
 
 
@@ -25,7 +24,6 @@ import { ViewFileComponent } from './components/viewFile/viewFile.component';
     LoadingIndicatorComponent,
     Error404PageComponent,
     LoadingpulsoComponent,
-    ViewFileComponent,
 
   ],
   imports: [

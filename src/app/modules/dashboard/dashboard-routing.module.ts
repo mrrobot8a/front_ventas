@@ -12,14 +12,14 @@ const routes: Routes = [
       {
         path: '', // Ruta vacía para redireccionar a users
         pathMatch: 'full', // Se asegura de que la ruta vacía coincida exactamente
-        redirectTo: 'users', // Redirige a la ruta de usuarios por defecto
+        redirectTo: 'customer', // Redirige a la ruta de usuarios por defecto
       },
       {
-        path: 'users',
+        path: 'customer',
         loadChildren: () => import('./pages/customer/customer.module').then(m => m.CustomerModule),
       },
       {
-        path: 'roles',
+        path: 'products',
         loadChildren: () => import('./pages/producto/producto.module').then(m => m.ProductoModule),
 
       },

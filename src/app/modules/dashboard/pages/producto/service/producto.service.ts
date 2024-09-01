@@ -4,7 +4,6 @@ import { TokenService } from '../../../../../shared/util/token.service';
 import { AuthService } from '../../../../auth/services/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, delay, map, of, switchMap, throwError } from 'rxjs';
-import { RolePegableResponse } from '../interface/role_pegination_response.interface';
 
 import { ProductApi } from '../interface/producto_api.interface';
 
@@ -26,8 +25,10 @@ export class ProductoService {
   public getAllProducts(): Observable<ProductApi> {
 
     const url = `${this.baseUrl}/products/`;
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
     });
 
     const result = this.http.get<ProductApi>(url, { headers }).pipe(
@@ -57,49 +58,111 @@ export class ProductoService {
     return result;
   }
 
-  public getAllRoles(page?: number, size?: number): Observable<any> {
-    return this.tokenService.getToken().pipe(
-      switchMap(token => {
-        if (token == null) {
-          console.log('No existe token en el localStorage');
-          return of(false); // Manejo adecuado de la ausencia de token
+  public saveProduct(product: ProductApi): Observable<ProductApi> {
+
+    const url = `${this.baseUrl}/products/`;
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    const result = this.http.post<ProductApi>(url, product, { headers }).pipe(
+
+      delay(3000), // Simular demora (si es necesario)
+
+      map(resp => {
+        console.log('service user response:', resp);
+        return resp;
+      }),
+
+      catchError(error => {
+        console.log('service user error:', error);
+        if (error.status === 0) {
+          console.log('Error 0');
+          return throwError(() => new Error('Error en el servidor'));
         }
-        // http://localhost:8000/admin/get-all-roles
-        const url = `${this.baseUrl}/admin/get-all-roles?page=${page}&size=${size}`;
+        if (error.status === 403) {
+          console.log('Error 403');
+          return throwError(() => new Error(error.error));
+        }
+
+        return throwError(() => new Error('Error procesando la petición get all user'));
+      }),
+    );
+
+    return result;
+  }
+
+  public updateProduct(product: ProductApi): Observable<ProductApi> {
+
+      const url = `${this.baseUrl}/products/${product.id_product}/`;
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      });
+
+      const result = this.http.put<ProductApi>(url, product, { headers }).pipe(
+
+        delay(3000), // Simular demora (si es necesario)
+
+        map(resp => {
+          console.log('service user response:', resp);
+          return resp;
+        }),
+
+        catchError(error => {
+          console.log('service user error:', error);
+          if (error.status === 0) {
+            console.log('Error 0');
+            return throwError(() => new Error('Error en el servidor'));
+          }
+          if (error.status === 403) {
+            console.log('Error 403');
+            return throwError(() => new Error(error.error));
+          }
+
+          return throwError(() => new Error('Error procesando la petición get all user'));
+        }),
+      );
+
+      return result;
+    }
+
+    public deleteProduct(product: ProductApi): Observable<ProductApi> {
+
+        const url = `${this.baseUrl}/products/${product.id_product}/`;
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         });
-        //start-petticion
-        return this.http.get<RolePegableResponse>(url, { headers }).pipe(
+
+        const result = this.http.delete<ProductApi>(url, { headers }).pipe(
+
           delay(3000), // Simular demora (si es necesario)
+
           map(resp => {
-            console.log('service role response:', resp);
-            return resp
+            console.log('service user response:', resp);
+            return resp;
           }),
+
           catchError(error => {
-            console.log('service role error:', error);
+            console.log('service user error:', error);
             if (error.status === 0) {
               console.log('Error 0');
               return throwError(() => new Error('Error en el servidor'));
             }
             if (error.status === 403) {
               console.log('Error 403');
-
               return throwError(() => new Error(error.error));
             }
-            return throwError(() => new Error(error.error));
-          })
+
+            return throwError(() => new Error('Error procesando la petición get all user'));
+          }),
         );
-      }),
-      catchError(error => {
-        console.error('Error en el proceso de obtención del token o en la petición HTTP', error);
-        return throwError(() => error);
-      })
-    );
-  }
 
-
+        return result;
+    }
 
 
 

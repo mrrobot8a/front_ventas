@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MaterialModule } from '../../../../material/material.module';
 import Swal from 'sweetalert2';
+import { NgxCurrencyDirective } from 'ngx-currency';
+import './dialog.component.css';
 
 
 export interface DialogData {
@@ -30,7 +32,8 @@ export interface DialogData {
     CommonModule,
     MaterialModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    NgxCurrencyDirective
   ],
 })
 export class DialogComponent implements OnInit {
@@ -63,7 +66,7 @@ export class DialogComponent implements OnInit {
       // Construye el formulario con la configuración proporcionada
       this.form = this.fb.group(this.data.configuracionDelFormulario);
     }
-
+    console.log('data', this.data);
     console.log('data', this.data.datosActuales);
     console.log('data', Object.keys(this.data.datosActuales!));
 
@@ -85,6 +88,7 @@ export class DialogComponent implements OnInit {
     if (this.form.valid && !this.data.datosActuales) {
       this.formStatus = false;
       this.dialogRef.close(this.form.value);
+      console.log('form', this.form.value);
       this.form.reset();
     }
     //para editar

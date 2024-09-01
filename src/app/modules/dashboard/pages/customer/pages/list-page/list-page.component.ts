@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { mapToCustomerModelTable } from '../../helper/service/mappers/CustomerMapper';
 import { ProductoService } from '../../../producto/service/producto.service';
 import { CustomerService } from '../../service/customer.service';
-import { CustomerModelTable } from '../../interface';
+import { CustomerApi, CustomerModelTable } from '../../interface';
 import { DocumentService } from '../../service/Document.service';
 import { DatePipe } from '@angular/common';
 
@@ -40,7 +40,7 @@ export class ListPageComponent implements OnInit, OnDestroy {
         next: (response: DocumentType[]) => {
           console.log('documentTypes:', response);
           // Ajustar el formato de documentTypes para que coincida con lo que espera opciones
-          this.camposDinamicos!.campos!['typeDocument'].opciones! = response.map((item: any) => ({
+          this.camposDinamicos!.campos!['document_type'].opciones! = response.map((item: any) => ({
             valor: item.id || '',
             vista: item.name || ''
           }));
@@ -68,7 +68,7 @@ export class ListPageComponent implements OnInit, OnDestroy {
   private formStatus = signal<FormStatus>(FormStatus.isNoPosting);
   public isStatusSolicitudHttp = computed(() => this.formStatus());
 
-  public isLoading = true;
+
   public isloading = signal<boolean>(false);
 
   showColumnActions = true;
@@ -77,10 +77,10 @@ export class ListPageComponent implements OnInit, OnDestroy {
 
   //validaciones de los campos del formulario
   readonly configuracionDelFormulario = {
-    firstName: ['', [Validators.required, Validators.minLength(6)]],
-    lastName: ['', [Validators.required]],
-    document: ['', [Validators.required , Validators.pattern('^[0-9]*$')]],
-    typeDocument: ['', [Validators.required]],
+    first_name: ['', [Validators.required, Validators.minLength(2)]],
+    last_name: ['', [Validators.required]],
+    document: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+    document_type: ['', [Validators.required]],
     date_of_birth: ['', [Validators.required]],
     profile_image_url: ['', [Validators.required]],
     address: ['', [Validators.required]],
@@ -98,11 +98,11 @@ export class ListPageComponent implements OnInit, OnDestroy {
         title: 'id',
         tipo: 'input',
       },
-      firstName: {
+      first_name: {
         title: 'Nombre Completo',
         tipo: 'input',
       },
-      lastName: {
+      last_name: {
         title: 'Apellido Completo',
         tipo: 'input',
         validaciones: [{ tipo: 'required' }]
@@ -112,7 +112,7 @@ export class ListPageComponent implements OnInit, OnDestroy {
         tipo: 'input',
         validaciones: [{ tipo: 'required' }, { tipo: 'minLength', valor: 2 }]
       },
-      typeDocument: {
+      document_type: {
         title: 'Tipo de Documento',
         tipo: 'select',
         opciones: [{ valor: 'no existe', vista: 'no existe' }]
@@ -164,10 +164,18 @@ export class ListPageComponent implements OnInit, OnDestroy {
     console.log('event:', event);
   }
 
-  onSave(event: CustomerModelTable) {
+  onSave(event: CustomerApi) {
     console.log('event:', event);
 
     event.date_of_birth = new DatePipe('en-US').transform(event.date_of_birth, 'yyyy-MM-dd')!;
+    // Asegúrate de que document_type sea un arreglo
+    const documentTypes = Array.isArray(event.document_type)
+      ? event.document_type
+      : [event.document_type];
+
+    // Obtener el primer elemento del arreglo
+    event.document_type = documentTypes[0];
+
 
     console.log('event:', event);
     this._saveCustomer(event);
@@ -179,22 +187,51 @@ export class ListPageComponent implements OnInit, OnDestroy {
 
 
     this._statusData.set(true);
-    this.isloading.set(true);
+    this.isloading.set(false);
     this.formStatus.set(FormStatus.isPosting);
 
+    this.subscription.add(
+      this._customerService.saveCustomer(user).subscribe({
+        next: (response) => {
+          console.log('response:', response);
+          if (response) {
 
+            const currentUsers = this._data() ? this._data().slice() : [];
+            currentUsers.unshift(response);
+            this._data.set(currentUsers);
+          }
+          this.formStatus.set(FormStatus.isPostingSuccessfully);
+          this.isloading.set(true);
+        },
+        error: (error) => {
+          console.error('Error fetching history:', error);
+          setTimeout(() => {
+            Swal.fire({
+              title: 'Error',
+              text: error,
+              icon: 'error',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 2500
+            });
+          }, 5000);
+          this.isloading.set(false);
+          this.formStatus.set(FormStatus.isPostingFailed);
+        }
+      })
+    );
   }
 
 
-  private loadCustomerData(): void {
+  private loadCustomerData(updateDta?:boolean): void {
     this.isloading.set(false);
     this.subscription.add(
       this._customerService.getAllCustomers().subscribe({
         next: (response) => {
-          console.log('Data received ListUser:', response);
-          console.log('Data received ListUser:', mapToCustomerModelTable(response));
-          this._data.set(mapToCustomerModelTable(response));
+          this._data.set(response);
           this.isloading.set(true);
+          if(updateDta)  this.formStatus.set(FormStatus.isPostingSuccessfully);
+
         },
         error: (error) => {
           console.log('Error fetching history:', error);
@@ -243,74 +280,95 @@ export class ListPageComponent implements OnInit, OnDestroy {
     console.log('event:', event);
     // event.roles = mapRoleFromApiToRole(event.roles);
     console.log('event:', event);
-    // this._editUser(event);
+    this._editCustomer(event);
     // // Lógica para manejar la edición
+
 
   }
 
-  // private _editUser(user: any) {
-  //   console.log('saveUser:', user);
-  //   this._statusData.set(true);
-  //   this.isLoading = true;
-  //   this.formStatus.set(FormStatus.isPosting);
-  //   // Lógica para guardar el nuevo usuario
-  //   this.subscription.add(
+  private _editCustomer(user: any) {
+    console.log('saveUser:', user);
 
-  //     this._customerService.editUser(user).subscribe({
-  //       next: (response) => {
-  //         // console.log(response);
-  //         // if (response && response.user) { // Asumiendo que la respuesta tiene un campo `user`
-  //         //   console.log('newUser:', mapToUserModelTable([response.user])[0]);
-  //         //   // Preparar el nuevo usuario para agregarlo al principio de la lista
-  //         //   const newUser = mapToUserModelTable([response.user])[0]; // Asume que tu función puede manejar arrays y devuelve un array
-  //         //   console.log('newUser:', newUser);
-  //         //   // Obtener la lista actual de usuarios y agregar el nuevo usuario al principio
-  //         //   const currentUsers = this._data() ? this._data().slice() : [];
-  //         //   const editedUserIndex = currentUsers.findIndex((u: { email: String; }) => u.email === newUser.email);
-  //         //   if (editedUserIndex !== -1) { // Si el usuario editado existe en la lista
-  //         //     // Reemplazar el usuario editado con el nuevo usuario en la misma posición
-  //         //     currentUsers[editedUserIndex] = newUser;
 
-  //         //     // Actualizar la señal con la nueva lista de usuarios
-  //         //     this._data.set(currentUsers);
-  //           }
+    this._statusData.set(true);
+    this.isloading.set(false);
+    this.formStatus.set(FormStatus.isPosting);
 
-  //           this.formStatus.set(FormStatus.isPostingSuccessfully);
-  //           this.isLoading = false;
-  //           // No necesitas llamar a loadHistoryData si solo estás añadiendo un nuevo usuario a la lista existente
-  //         }
+    this.subscription.add(
+      this._customerService.updateCustomer(user).subscribe({
+        next: (response) => {
+          console.log('response:', response);
+          if (response) {
 
-  //       },
-  //       complete: () => {
-
-  //       },
-  //       error: (error) => {
-  //         console.log(error);
-  //         console.error('Error fetching history:', error);
-
-  //         // Establecer un retraso antes de mostrar la alerta
-  //         setTimeout(() => {
-  //           Swal.fire({
-  //             title: 'Error',
-  //             text: error,
-  //             icon: 'error',
-  //             showConfirmButton: false,
-  //             allowOutsideClick: false,
-  //             timer: 2500
-  //           });
-  //         }, 5000);
-
-  //         this.isLoading = false;
-  //         this.formStatus.set(FormStatus.isPostingFailed);
-  //       }
-  //     }),
-  //   );
-  // }
+            const currentUsers = this._data() ? this._data().slice() : [];
+            const editedUserIndex = currentUsers.findIndex((u: { id: any; }) => u.id === user.id);
+            if (editedUserIndex !== -1) {
+              currentUsers[editedUserIndex] = response;
+              this._data.set(currentUsers);
+            }
+          }
+          this.formStatus.set(FormStatus.isPostingSuccessfully);
+          this.isloading.set(true);
+        },
+        error: (error) => {
+          console.error('Error fetching history:', error);
+          setTimeout(() => {
+            Swal.fire({
+              title: 'Error',
+              text: error,
+              icon: 'error',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 2500
+            });
+          }, 5000);
+          this.isloading.set(false);
+          this.formStatus.set(FormStatus.isPostingFailed);
+        }
+      })
+    );
+  }
 
   onEliminar(row: any) {
     console.log('Eliminar DESDE EL PADRE:', row);
     // Lógica para manejar la eliminación
+    this._deleteCustomer(row);
   }
+
+  private _deleteCustomer(user: any) {
+    console.log('saveUser:', user);
+    this._statusData.set(true);
+    this.isloading.set(false);
+    this.formStatus.set(FormStatus.isDeleted);
+    // Lógica para guardar el nuevo usuario
+    this.subscription.add(
+      this._customerService.deleteCustomer(user).subscribe({
+        next: (response) => {
+          console.log('response:', response);
+          if (response) {
+            this.loadCustomerData(true);
+          }
+
+        },
+        error: (error) => {
+          console.error('Error fetching history:', error);
+          setTimeout(() => {
+            Swal.fire({
+              title: 'Error',
+              text: error,
+              icon: 'error',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 2500
+            });
+          }, 5000);
+          this.isloading.set(false);
+          this.formStatus.set(FormStatus.isPostingFailed);
+        },
+      }),
+    );
+  }
+
 
 }
 

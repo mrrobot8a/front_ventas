@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 
 import { Router } from '@angular/router';
-import { LoginResponse } from '../../interfaces/login-response.interface';
+
 import { AlertService } from '../../../../shared/components/alerts/alert.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -40,6 +40,25 @@ export class LoginPageComponent {
 
 
   login() {
+    this.isLoading = true;
+    const { email, password } = this.loginForm.value;
+
+    this.authService.login(email, password).subscribe(
+      {
+        next: (resp: any) => {
+          console.log(resp, 'resp');
+          this.isLoading = false;
+          this.router.navigate(['/']);
+          this.alert.success('Bienvenido', 'success', 'Bienvenido a la aplicación', 3000, 'top-end','green');
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.alert.error('Error', 'Usuario o contraseña incorrectos','error', 3000, 'top-end','red');
+
+        }
+      }
+    );
 
   }
 

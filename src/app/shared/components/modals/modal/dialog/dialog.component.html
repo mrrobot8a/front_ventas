@@ -3,14 +3,16 @@
   <form [formGroup]="form" autocomplete="auto" (ngSubmit)="submitForm()">
 
     <div *ngFor="let field of objectKeys(data.campos!)" class="container-inputs">
-      <ng-container *ngIf="field === 'id'">
-        <input matInput type="text" [formControlName]="field" [style.display]="'none'">
+      <ng-container *ngIf="data.campos![field].title === 'id'">
+        <input matInput type="text" [formControlName]="field" style="display: none;">
       </ng-container>
-      <!--start input-->
-      <ng-container *ngIf="data.campos![field].tipo === 'input' && field !== 'id'">
+
+      <!-- Input de texto simple -->
+      <ng-container *ngIf="data.campos![field].tipo === 'input' && data.campos![field].title !== 'id'">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ data.campos![field].title }}</mat-label>
-          <input matInput [formControlName]="field" [type]="hide && field ==='password' ? 'password' : 'text'"
+          <input matInput [formControlName]="field"
+            [type]="hide && field === 'password' ? 'password' : 'text'"
             autocomplete="auto">
           <button *ngIf="field === 'password'" mat-icon-button matSuffix type="button" (click)="hide = !hide">
             <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
@@ -20,8 +22,30 @@
           </mat-error>
         </mat-form-field>
       </ng-container>
-      <!--end input-->
-      <!--start date-->
+
+      <!-- Input de número -->
+      <ng-container *ngIf="data.campos![field].tipo === 'number'">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ data.campos![field].title }}</mat-label>
+          <input matInput [formControlName]="field" type="number" autocomplete="auto">
+          <mat-error *ngIf="form.controls[field].invalid && form.controls[field].touched">
+            Campo inválido o requerido
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- Input de moneda -->
+      <ng-container *ngIf="data.campos![field].tipo === 'currency'">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ data.campos![field].title }}</mat-label>
+          <input matInput class="currency-input" style="/* text-align: left; */" [formControlName]="field"  currencyMask [options]="{ prefix: '$ ', thousands: ',', decimal: '.', precision: 2 }">
+          <mat-error *ngIf="form.controls[field].invalid && form.controls[field].touched">
+            Campo inválido o requerido
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- Input de fecha -->
       <ng-container *ngIf="data.campos![field].tipo === 'date'">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ data.campos![field].title }}</mat-label>
@@ -33,40 +57,39 @@
           </mat-error>
         </mat-form-field>
       </ng-container>
-        <!--start textArea-->
-        <ng-container *ngIf="data.campos![field].tipo === 'textarea'">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ data.campos![field].title }}</mat-label>
-            <textarea matInput #postalCode maxlength="100" [formControlName]="field" rows="5"></textarea>
-            <mat-hint align="end">{{postalCode.value.length}} / 100</mat-hint>
-            <mat-error *ngIf="form.controls[field].invalid && form.controls[field].touched">
-              Campo inválido o requerido
-            </mat-error>
-          </mat-form-field>
-        </ng-container>
-        <!--end textArea-->
-        <!--start checkBox-->
-        <ng-container *ngIf="data.campos![field].tipo === 'checkbox'">
-          <mat-checkbox [formControlName]="field">{{ data.campos![field].title }}</mat-checkbox>
-        </ng-container>
-        <!--end checkBox-->
-        <!-- start select-->
-        <ng-container *ngIf="data.campos![field].tipo === 'select'">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ data.campos![field].title }}</mat-label>
-            <mat-select [formControlName]="field" multiple>
-              <ng-container *ngFor="let option of data.campos![field].opciones">
-                <mat-option [value]="option.valor"> {{ option.vista }} </mat-option>
-              </ng-container>
-            </mat-select>
-          </mat-form-field>
-        </ng-container>
-        <!-- end select-->
+
+      <!-- Textarea -->
+      <ng-container *ngIf="data.campos![field].tipo === 'textarea'">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ data.campos![field].title }}</mat-label>
+          <textarea matInput #postalCode maxlength="100" [formControlName]="field" rows="5"></textarea>
+          <mat-hint align="end">{{postalCode.value.length}} / 100</mat-hint>
+          <mat-error *ngIf="form.controls[field].invalid && form.controls[field].touched">
+            Campo inválido o requerido
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- Checkbox -->
+      <ng-container *ngIf="data.campos![field].tipo === 'checkbox'">
+        <mat-checkbox [formControlName]="field">{{ data.campos![field].title }}</mat-checkbox>
+      </ng-container>
+
+      <!-- Select -->
+      <ng-container *ngIf="data.campos![field].tipo === 'select'">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ data.campos![field].title }}</mat-label>
+          <mat-select [formControlName]="field">
+            <ng-container *ngFor="let option of data.campos![field].opciones">
+              <mat-option [value]="option.valor"> {{ option.vista }} </mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
     </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions class="container-accions" align="center">
   <button style="background-color: blue;" mat-button [mat-dialog-close]="null">Cancelar</button>
-  <button style="background-color: red;" mat-button type="submit" [disabled]="form.invalid"
-    (click)="submitForm()">Guardar</button>
+  <button style="background-color: red;" mat-button type="submit" [disabled]="form.invalid" (click)="submitForm()">Guardar</button>
 </mat-dialog-actions>

@@ -7,4 +7,5 @@ export enum FormStatus {
   isFormPostFailed = 'isFormPostFailed',
   isValid = 'isValid',
   isInvalid = 'isInvalid',
+  isDeleted = 'isDeleted',
 }

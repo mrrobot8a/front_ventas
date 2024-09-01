@@ -1,4 +1,4 @@
-<div class="container-header">
+ <div class="container-header">
   <h1> {{title}}</h1>
   <mat-form-field appearance="outline">
     <mat-label>Filter</mat-label>
@@ -34,7 +34,7 @@
 
             <!-- Campos NombreCompleto -->
             <ng-container *ngIf="column === 'fullname';else defaultColumn">
-               {{element['firstName']}} {{ element['lastName'] }}
+               {{element['first_name']}} {{ element['last_name'] }}
             </ng-container>
             <!--end  NombreCompleto-->
 

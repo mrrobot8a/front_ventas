@@ -21,7 +21,9 @@ export class AlertService {
   };
 
 
-  private alerdanger(title: string, icon?: any, htmlMessage?: string | any, duration?: number | any, position?: any): Promise<any> {
+
+
+  private alerdanger(title: string, icon?: any, htmlMessage?: string | any, duration?: number | any, position?: any,color?:string): Promise<any> {
     let timerInterval: any;
     Swal.fire({
       title: title,
@@ -47,7 +49,7 @@ export class AlertService {
         Swal.showLoading(Swal.getDenyButton());
         const barProgress = Swal.getPopup()?.querySelector(".swal2-timer-progress-bar") as HTMLElement;
 
-        barProgress!.style.backgroundColor = "red";
+        barProgress!.style.backgroundColor = color || 'red';
 
         // const barTime = Swal.getPopup()?.querySelector(".swal2-timer-progress-bar") as HTMLElement;
         // barTime!.style.backgroundColor = "red";
@@ -97,4 +99,18 @@ export class AlertService {
 
   }
 
+
+
+
+
+  public success(message: string, title?: string, icon?: string,duration?: number, position?: any,color?:string) {
+    this.alerdanger(title || 'Éxito', icon || 'success', message, duration || 3000, position || 'top-end',color || 'green');
+  }
+
+  public error(message: string, title?: string, icon?: string,duration?: number, position?: any,color?:string) {
+    this.alerdanger(title || 'Error', icon || 'error', message, duration || 3000, position || 'top-end',color || 'red');
+  }
+
 }
+
+

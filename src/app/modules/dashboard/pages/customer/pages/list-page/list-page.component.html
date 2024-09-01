@@ -1,28 +1,16 @@
-<app-custom-table
-  [data]="getDataHistory()!"
-  [displayedColumns]="[
-  'fullName','document',
+<app-custom-table [data]="getDataHistory()!" [displayedColumns]="[
+  'fullname',
+  'document',
   'address',
   'phone','date_of_birth',
-  'email', 'acciones']"
-  [columnNames]="{
-    'fullName': 'Nombre Completo' ,
+  'acciones']" [columnNames]="{
+    'fullname': 'Nombre Completo',
     'document': 'Documento',
     'address': 'Dirección',
     'phone': 'Teléfono',
     'date_of_birth': 'Fecha de Nacimiento',
-    'email':'Correo',
-    'acciones': 'Acción Usuario'}"
-  [showColumnActions]="showColumnActions"
-  [camposDinamicos]="camposDinamicos"
-  [isPosting]="isPosting()"
-  [isLoading]="isloading()"
-  [isStatusSolictud]="isStatusSolicitudHttp()"
-  (pageChange)="onPageChange($event)"
-  (editarEvento)="onEditar($event)"
-  (eliminarEvento)="onEliminar($event)"
-  (onSave)="onSave($event)"
-  [title]="title"
-  >
+    'acciones': 'Acción Usuario'}" [showColumnActions]="showColumnActions" [camposDinamicos]="camposDinamicos"
+  [isPosting]="isPosting()" [isLoading]="isloading()" [isStatusSolictud]="isStatusSolicitudHttp()"
+  (pageChange)="onPageChange($event)" (editarEvento)="onEditar($event)" (eliminarEvento)="onEliminar($event)"
+  (onSave)="onSave($event)" [title]="title">
 </app-custom-table>
-

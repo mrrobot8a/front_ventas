@@ -6,9 +6,9 @@ import { Router } from '@angular/router';
 import { RouterModule, Routes } from '@angular/router';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { User } from '../../../modules/auth/interfaces/user.interface';
 import { AuthService } from '../../../modules/auth/services/auth.service';
 import { SharedModule } from "../../shared.module";
+import { User } from '../../../modules/auth/interfaces/login-response.interface';
 
 
 export type MenuItem = {
@@ -66,15 +66,17 @@ export class CustomSidenavComponent implements OnInit {
   sideNavCollapsed = signal(false);
 
 
+
   @Input() set collapsedPadre(val: boolean) {
     this.sideNavCollapsed.set(val);
   };
 
   @Input() currentUser?: User | null;
-  @Input() listItemMenu: MenuItem[] | undefined;
+
 
 
   public menuItems = signal<MenuItem[]>([]);
+
 
   ngOnInit() {
 
@@ -94,9 +96,7 @@ export class CustomSidenavComponent implements OnInit {
   constructor(
 
     @Inject('menuRoutes') private menuRoutes: any[],
-    private router: Router,
-    private authService: AuthService,
-    private renderer2: Renderer2,
+    private auhtService : AuthService
   ) {
 
 
@@ -107,12 +107,12 @@ export class CustomSidenavComponent implements OnInit {
 
   getMenuItemsByPage(rol: string): MenuItem[] {
 
-
+    console.log(rol, 'rol');
     switch (rol.toLowerCase()) {
-      case 'usuario':
+      case 'administrador':
         return [
-          { icon: 'account_circle', label: 'Clientes', route: 'users/list' },
-          { icon: 'production_quantity_limits', label: 'Productos', route: 'roles/list' },
+          { icon: 'account_circle', label: 'Clientes', route: 'customer/list' },
+          { icon: 'production_quantity_limits', label: 'Productos', route: 'products/list' },
 
         ];
       default:
@@ -121,7 +121,7 @@ export class CustomSidenavComponent implements OnInit {
   }
 
   tieneRolUsuario(usuario: any): string {
-    return usuario?.roles?.some((rol: any) => rol.authority.toLowerCase() !== 'administrador') ? 'administrador' : 'usuario';
+    return usuario.roles[0];
   }
 
   collapsed = signal(false);
@@ -136,15 +136,15 @@ export class CustomSidenavComponent implements OnInit {
 
   sizeTitle = computed(() => this.collapsed() ? '0' : '20');
 
-  // currentRolUser = computed(() => !this.collapsed() ? (this.currentUser?.roles.find(role => role.authority === 'Administrador')?.authority || this.currentUser?.roles[0].authority) + ':' : '');
+  currentRolUser = computed(() => this.tieneRolUsuario(this.currentUser));
 
-  currentRolUser = computed(() => "Administrador");
+
   nameUserAbbreviated = computed(() => {
     console.log('nameUserAbbreviated--Veces llamada');
 
-    // const fullName = this.currentUser?.fullname ? this.currentUser?.fullname : this.currentUser?.firstName + " " + this.currentUser?.lastName; // Obtener el valor actual de la señal
-    // console.log('fullname:', fullName);
-    const fullName = 'Johan Perez';
+    const fullName = this.currentUser?.name_user; // Obtener el valor actual de la señal
+
+
     if (!this.collapsed()) {
       return fullName;
     } else {
@@ -157,7 +157,10 @@ export class CustomSidenavComponent implements OnInit {
 
 
   onLogout() {
-    this.router.navigate(['/auth/login']);
+
+
+    this.auhtService.logout();
+
   }
 
 

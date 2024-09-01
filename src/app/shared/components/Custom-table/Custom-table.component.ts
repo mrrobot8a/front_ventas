@@ -44,10 +44,19 @@ export class CustomTableComponent<T> implements OnInit, OnChanges, AfterViewInit
           icon: 'info',
         })
         break;
+      case FormStatus.isDeleted:
+        Swal.fire({
+          title: 'Eliminando',
+          text: 'Por favor, espere...',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          icon: 'info',
+        })
+        break;
       case FormStatus.isPostingSuccessfully:
         Swal.fire({
-          title: 'Guardado',
-          text: 'Guardado con éxito',
+          title: 'Cambio Realizado',
+          text: 'Accion  con éxito',
           icon: 'success',
           showConfirmButton: true,
           allowOutsideClick: false,
@@ -183,25 +192,39 @@ export class CustomTableComponent<T> implements OnInit, OnChanges, AfterViewInit
   delete(element: any) {
     // Implementa la lógica de eliminación aquí
     console.log('Deleting', element);
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "¡No podrás revertir esto!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, bórralo!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.eliminarEvento.emit(element);
+        Swal.fire(
+          'Eliminado!',
+          'Tu archivo ha sido eliminado.',
+          'success'
+        )
+      }
+    });
   }
 
   //abre el dilogo de formulario PARA GUARDAR DATA
   openDialog(): void {
 
     const dialogRef = this.dialog.open(DialogComponent, {
-      width: '600px',
+      width: '700px',
       data: this.camposDinamicos
     });
 
 
 
-    dialogRef.beforeClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
-
-    });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('El diálogo fue cerrado', result);
+    console.log('result Save Data :', result);
       if (result.length === 0) return;
       this.onSave.emit(result);
 

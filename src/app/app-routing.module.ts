@@ -11,12 +11,12 @@ import es from '@angular/common/locales/es';
 const routes: Routes = [
   {
     path: 'auth',
-    // canActivate:[isNoAuthenticatedGuardTsGuard],
+    canActivate:[isNoAuthenticatedGuardTsGuard],
     loadChildren: () => import('./modules/auth/auth.module').then(m => m.AuthModule),
   },
   {
     path: 'dashboard',
-    // canActivate:[isAuthenticatedGuard],
+    canActivate:[isAuthenticatedGuard],
     loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule),
 
   },

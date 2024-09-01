@@ -4,6 +4,8 @@ export interface CustomerModelTable {
   email: string;
   document: string;
   fullname: string;
+  first_name: string;
+  last_name: string;
   address: string;
   phone: string;
   date_of_birth: string; // Se podría usar Date si prefieres manipular fechas en formato Date

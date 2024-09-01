@@ -17,21 +17,7 @@ export class AppComponent implements OnInit {
 
   constructor(private route: ActivatedRoute) {
 
-    this.router.events.subscribe(
-      {
-        next: (event) => {
-          if (event instanceof NavigationStart && event.url.includes('change-password')) {
-            console.log('ruta actual:', event.url);
-            this.isChamgePassword.set(true);
 
-          }
-
-        },
-        complete: () => {
-
-        }
-      }
-    );
 
   }
 
@@ -42,25 +28,26 @@ export class AppComponent implements OnInit {
   }
 
 
-  title = 'Bovid';
+  title = 'front_productos';
   private authService = inject(AuthService);
   private router = inject(Router);
-  private isChamgePassword = signal<boolean>(false);
+
 
 
 
   public finishedAuthCheck = computed<boolean>(() => {
 
     console.log('2')
-    if (this.isChamgePassword()) {
-      return true;
-    }
+
 
     console.log(this.authService.authStatus())
     if (this.authService.authStatus() === AuthStatus.checking) {
+      console.log('ruta actual' , this.router.url)
       console.log('authStatus:', this.authService.authStatus())
       return false;
     }
+
+
 
 
     console.log(this.authService.authStatus())
@@ -77,9 +64,9 @@ export class AppComponent implements OnInit {
 
       case AuthStatus.authenticated:
 
-        const returnUrl = localStorage.getItem('returnUrl');
+        const returnUrl  = localStorage.getItem('returnUrl');
         console.log('returnUrl:', returnUrl);
-        if (!returnUrl) {
+        if (!returnUrl ) {
           console.log('entro', returnUrl)
           this.router.navigateByUrl('/dashboard');
           return;

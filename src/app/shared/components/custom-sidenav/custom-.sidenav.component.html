@@ -1,47 +1,43 @@
 <!-- <mat-sidenav-container > -->
-  <mat-sidenav #sidenav opened mode="side"  [style]="{width: sidenavWidth() }">
+<mat-sidenav #sidenav opened mode="side" [style]="{width: sidenavWidth() }">
 
-    <mat-toolbar>
-      <button mat-icon-button (click)="collapsed.set(!collapsed())" [style]="{}" class="button">
-        <mat-icon *ngIf="!collapsed()"> menu </mat-icon>
-        <mat-icon *ngIf="collapsed()"> close </mat-icon>
+  <mat-toolbar>
+    <button mat-icon-button (click)="collapsed.set(!collapsed())" [style]="{}" class="button">
+      <mat-icon *ngIf="!collapsed()"> menu </mat-icon>
+      <mat-icon *ngIf="collapsed()"> close </mat-icon>
 
-      </button>
-    </mat-toolbar>
+    </button>
+  </mat-toolbar>
 
-    <article class="article-content">
-      <header class="headerSidebar--usuarios">
-        <div class="titulo-principal-sidebar--usuarios">
-          <h1   [@textAnimation]="!collapsed() ? 'visible': 'hidden'" class="titulo-pricipal-sidebar-h1--usuarios">Welcome User</h1>
-          <!-- <figure class="Logo-img-sidebar--usuarios">
-            <img [@widthAnimation]="!collapsed() ? 'expanded' : 'collapsed'"  src="./../../../../assets/icon.svg" alt="Icono Bovid" />
-          </figure> -->
-        </div>
-        <mat-label    class="label-sidebar--usuarios">{{currentRolUser()}}<span>: {{nameUserAbbreviated()}}</span></mat-label>
-      </header>
+  <article class="article-content">
+    <header class="headerSidebar--usuarios">
+      <div class="titulo-principal-sidebar--usuarios">
+        <h1 [@textAnimation]="!collapsed() ? 'visible': 'hidden'" class="titulo-pricipal-sidebar-h1--usuarios">Welcome
+          User</h1>
+      </div>
+      <mat-label class="label-sidebar--usuarios">{{currentRolUser()}}<span>:
+          {{nameUserAbbreviated()}}</span></mat-label>
+    </header>
 
-      <main class="main-admin--usuarios">
-        <mat-nav-list class="main-admin--usuarios" [class.mat-nav-list-space]="sideNavCollapsed()">
-          <a  mat-list-item *ngFor="let item of menuItems()"
-          [routerLink] = "item.route"
-          routerLinkActive="selected-menu-item"
-          #rla="routerLinkActive"
-          [activated]="rla.isActive"
-           >
+    <main class="main-admin--usuarios">
+      <mat-nav-list class="main-admin--usuarios" [class.mat-nav-list-space]="sideNavCollapsed()">
+        <a mat-list-item *ngFor="let item of menuItems()" [routerLink]="item.route"
+          routerLinkActive="selected-menu-item" #rla="routerLinkActive" [activated]="rla.isActive">
           <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
           <span matListItemTitle>{{item.label}}</span>
-          </a>
-        </mat-nav-list>
-      </main>
-      <footer class="footer-sidebar">
+        </a>
+      </mat-nav-list>
+    </main>
+    <footer class="footer-sidebar">
 
-        <button class="botton" type="button" (click)="onLogout()" > <mat-icon *ngIf="collapsed()"> logout </mat-icon><span *ngIf="!collapsed()" >salir</span></button>
-      </footer>
-    </article>
-  </mat-sidenav>
+      <button class="botton" type="button" (click)="onLogout()"> <mat-icon *ngIf="collapsed()"> logout </mat-icon><span
+          *ngIf="!collapsed()">salir</span></button>
+    </footer>
+  </article>
+</mat-sidenav>
 
-  <mat-sidenav-content  class="content mat-elevation-z8" [style.margin-left]="mariginLeft()">
-    <router-outlet></router-outlet>
-  </mat-sidenav-content>
+<mat-sidenav-content class="content mat-elevation-z8" [style.margin-left]="mariginLeft()">
+  <router-outlet></router-outlet>
+</mat-sidenav-content>
 
 <!-- </mat-sidenav-container> -->

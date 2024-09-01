@@ -4,9 +4,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../../../auth/services/auth.service';
 import { Observable, catchError, delay, map, of, switchMap, throwError } from 'rxjs';
 
-import { UserRegistration } from '../interface/user-register';
 import { CustomerApi } from '../interface/customer_api.interface';
 import { CustomerResgiter } from '../interface/customer_register.interface';
+import { AuthResponse } from '../../../../auth/interfaces';
 
 
 
@@ -61,9 +61,11 @@ export class CustomerService {
   }
 
 
-  public saveCustomer(customer: CustomerResgiter): Observable<any> {
+  public saveCustomer(customer: any): Observable<any> {
 
     console.log('save', customer);
+    const token = localStorage.getItem('token');
+    const body = { customer };
     const url = `${this.baseUrl}/customers/`;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -71,7 +73,7 @@ export class CustomerService {
     });
 
 
-    const result = this.httpClient.post<CustomerApi>(url,customer,{ headers }).pipe(
+    const result = this.httpClient.post<CustomerApi>(url,customer, { headers }).pipe(
 
       delay(3000),
 
@@ -99,6 +101,86 @@ export class CustomerService {
 
   }
 
+
+  public updateCustomer(customer: any): Observable<any> {
+
+    console.log('save', customer);
+    const token = localStorage.getItem('token');
+    console.log('token', customer.id);
+
+    const url = `${this.baseUrl}/customers/${customer.id}/`;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+
+    const result = this.httpClient.put<CustomerApi>(url,customer, { headers }).pipe(
+
+      delay(3000),
+
+      map(resp => {
+        console.log('service user response:', resp);
+        return resp;
+      }),
+
+      catchError(error => {
+        console.log('service user error:', error);
+        if (error.status === 0) {
+          console.log('Error 0');
+          return throwError(() => new Error('Error en el servidor'));
+        }
+        if (error.status === 403) {
+          console.log('Error 403');
+          return throwError(() => new Error(error.error));
+        }
+
+        return throwError(() => new Error('Error procesando la petición get all user'));
+      }),
+    );
+
+    return result;
+
+  }
+
+  public deleteCustomer(customer: any): Observable<any> {
+
+      console.log('save', customer);
+      const token = localStorage.getItem('token');
+      console.log('token', customer.id);
+
+      const url = `${this.baseUrl}/customers/${customer.id}/`;
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      });
+
+      const result = this.httpClient.delete<CustomerApi>(url, { headers }).pipe(
+
+        delay(3000),
+
+        map(resp => {
+          console.log('service user response:', resp);
+          return of(true);
+        }),
+
+        catchError(error => {
+          console.log('service user error:', error);
+          if (error.status === 0) {
+            console.log('Error 0');
+            return throwError(() => new Error('Error en el servidor'));
+          }
+          if (error.status === 403) {
+            console.log('Error 403');
+            return throwError(() => new Error(error.error));
+          }
+
+          return throwError(() => new Error('Error procesando la petición get all user'));
+        }),
+      );
+
+      return result;
+  }
 
 
 }
